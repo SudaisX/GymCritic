@@ -9,32 +9,14 @@ const Review = require('../models/review');
 
 const { reviewSchema } = require('../schemas.js');
 
-const { validateReview } = require('../middleware');
+const { validateReview, isLoggedIn, isReviewAuthor } = require('../middleware');
 
-router.post(
-    '/',
-    validateReview,
-    catchAsync(async (req, res) => {
-        const gym = await Gym.findById(req.params.id);
-        const review = new Review(req.body);
-        gym.reviews.push(review);
-        await review.save();
-        await gym.save();
-        req.flash('success', 'Successfully added a new review');
-        res.redirect(`/gyms/${gym._id}`);
-    })
-);
+const reviewsController = require('../controllers/reviews');
 
-router.delete(
-    '/:reviewID',
-    catchAsync(async (req, res) => {
-        const { id, reviewID } = req.params;
+router.post('/', validateReview, isLoggedIn, catchAsync(reviewsController.createReview));
 
-        await Gym.findByIdAndUpdate(id, { $pull: { reviews: reviewID } });
-        await Review.findByIdAndDelete(reviewID);
-        req.flash('error', 'Review deleted');
-        res.redirect(`/gyms/${id}`);
-    })
-);
+router.get('/', reviewsController.redirectBack);
+
+router.delete('/:reviewID', isLoggedIn, isReviewAuthor, catchAsync(reviewsController.deleteReview));
 
 module.exports = router;
