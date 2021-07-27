@@ -1,4 +1,4 @@
-const { gymSchema } = require('./schemas.js');
+const { gymSchema, reviewSchema } = require('./schemas.js');
 const ExpressError = require('./utils/ExpressError');
 const Gym = require('./models/gym');
 
