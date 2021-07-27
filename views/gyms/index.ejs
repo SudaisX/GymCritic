@@ -1,0 +1,22 @@
+<% layout('layouts/boiletplate')%>
+
+<h1>All Gyms</h1>
+
+<% for(let gym of gyms.reverse()){ %>
+<div class="card mb-3">
+    <div class="row">
+        <div class="col-md-4">
+            <img src="<%= gym.image %>" class="card-img-top" alt="..." style="height: 300px; object-fit: cover;">
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title"><%= gym.title %></h5>
+                <p class="card-text"><%= gym.description %></p>
+                <p class="card-text"><small class="text-muted"><%= gym.location %></small></p>
+                <a href="<%= `/gyms/${gym._id}` %>" class="btn btn-primary">View Gym</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% } %>

@@ -1,0 +1,68 @@
+<% layout('layouts/boiletplate')%>
+
+
+<div class="card mb-5">
+    <div class="row">
+        <div class="col-md-4">
+            <img src="<%= gym.image %> " class="card-img-top" alt="..." style="object-fit: cover; height: 380px;">
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title"><%= gym.title %></h5>
+                <p class="card-text"><%= gym.description %></p>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-muted"><%= gym.location %></li>
+                <li class="list-group-item">Rs.<%= gym.fee %> / month</li>
+                <li class="list-group-item">Submitted by <%=gym.author.username %></li>
+            </ul>
+            <% if(currentUser && gym.author.equals(currentUser._id)) { %>
+            <div class="card-body">
+                <a href="/gyms/<%= gym._id %>/edit" class="card-link btn btn-warning">Edit Gym</a>
+                <form class="d-inline" action="/gyms/<%= gym._id %>?_method=DELETE" method="POST">
+                    <button class="card-link btn btn-danger">Delete Gym</button>
+                </form>
+            </div>
+            <% } %>
+            <div class="card-footer text-muted">
+                <a href="/gyms">Back to all Gyms</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-12 col-lg-5 col-md-5 col-sm-12">
+        <h2>Leave a Review</h2>
+        <form action="/gyms/<%= gym._id %>/reviews" method="POST" class="mb-3 needs-validation" novalidate>
+            <div class="mb-3">
+                <label for="rating" class="form-label">Rating</label>
+                <input type="range" min="1" max="5" name="rating" class="form-range">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="body">Review</label>
+                <textarea class="form-control" name="body" id="body" cols="60" rows="3" required></textarea>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+            <button class="btn btn-success">Add Review</button>
+        </form>
+    </div>
+    <div class="col-1"></div>
+    <div class="col">
+        <h2 class="mb-3">Reviews</h2>
+        <% for (let review of gym.reviews){ %>
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Rating: <%= review.rating %></h5>
+                <p class="card-text">Review: <%= review.body %></p>
+                <form action="/gyms/<%= gym._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
+                    <button class="btn btn-sm btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+        <% } %>
+    </div>
+
+</div>
