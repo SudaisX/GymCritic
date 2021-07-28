@@ -33,7 +33,7 @@ const seedDB = async () => {
     for (let city of pkCities) {
         const gym = new Gym({
             title: `${randomName(descriptors)} ${randomName(places)}`,
-            author: '60ffa1835a12362700b76d5c', // YOUR USER ID
+            author: '610139159e4b5208f45f094a', // YOUR USER ID
             location: `${city.city}, ${city.admin_name}`,
             images: [
                 {
