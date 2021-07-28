@@ -14,6 +14,8 @@ const LocalStrategy = require('passport-local');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 
+const MongoDBStore = require('connect-mongo')(session);
+
 const ExpressError = require('./utils/ExpressError');
 const catchAsync = require('./utils/catchAsync');
 
@@ -25,9 +27,11 @@ const gymRoutes = require('./routes/gyms');
 const reviewRoutes = require('./routes/reviews');
 const userRoutes = require('./routes/users');
 
+const db_url = process.env.DB_URL; // For Production
+// const db_url = 'mongodb://localhost:27017/gym-critic'; // For Developement
 // MongoDB Connection
 mongoose
-    .connect('mongodb://localhost:27017/gym-critic', {
+    .connect(db_url, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useCreateIndex: true,
@@ -46,9 +50,22 @@ app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(mongoSanitize());
 
+const secret = process.env.SECRET || 'mysecretkey';
+
+const store = new MongoDBStore({
+    url: db_url,
+    secret,
+    touchAfter: 24 * 3600,
+});
+
+store.on('error', function (e) {
+    console.log('SESSION STORE ERROR', e);
+});
+
 const sessionConfig = {
+    store,
     name: 'session',
-    secret: 'mysecretkey',
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
