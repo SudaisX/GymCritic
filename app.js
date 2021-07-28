@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
+
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -7,6 +11,8 @@ const engine = require('ejs-mate');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
 
 const ExpressError = require('./utils/ExpressError');
 const catchAsync = require('./utils/catchAsync');
@@ -38,13 +44,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(mongoSanitize());
 
 const sessionConfig = {
+    name: 'session',
     secret: 'mysecretkey',
     resave: false,
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
+        // secure: true,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7,
     },
@@ -52,6 +61,7 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 
 app.use(flash());
+app.use(helmet({ contentSecurityPolicy: false }));
 
 app.use(passport.initialize());
 app.use(passport.session());
